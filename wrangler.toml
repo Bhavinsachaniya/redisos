@@ -1,0 +1,15 @@
+name = "redisplayground"
+compatibility_date = "2026-02-03"
+
+[site]
+bucket = "./dist"
+
+[[pages_build_output]]
+directory = "dist"
+
+[build]
+command = "npm run build"
+cwd = "."
+
+[build.environment]
+NODE_VERSION = "20"
