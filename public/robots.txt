@@ -1,0 +1,11 @@
+# robots.txt for Redis Playground
+# https://redis.bhavinsachaniya.in
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://redis.bhavinsachaniya.in/sitemap.xml
+
+# Crawl-delay (optional, helps prevent server overload)
+Crawl-delay: 1

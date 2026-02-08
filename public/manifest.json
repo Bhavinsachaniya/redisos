@@ -1,0 +1,32 @@
+{
+  "name": "Redis Playground: The Robot Warehouse",
+  "short_name": "Redis Playground",
+  "description": "Master Redis commands through an interactive robot warehouse simulation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#ff0000",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921890/Frame_4ADFFAD_sasjau.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921890/Frame_4ADFFAD_sasjau.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "developer tools"],
+  "screenshots": [
+    {
+      "src": "https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921879/Frame_3qraFA_cglpky.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ]
+}

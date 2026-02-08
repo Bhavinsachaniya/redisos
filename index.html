@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ff0000" />
+    <title>Redis Playground: The Robot Warehouse - Interactive Redis Tutorial</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+      content="Master Redis commands through an interactive robot warehouse simulation. Learn key-value operations, data structures, and best practices with hands-on exercises. Free Redis tutorial for beginners." />
+    <meta name="keywords"
+      content="Redis, Redis tutorial, Redis learning, Redis commands, database, key-value store, interactive tutorial, Redis playground, learn Redis, Redis for beginners, Redis exercises, Redis CLI, in-memory database" />
+    <meta name="author" content="Bhavin Sachaniya" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <link rel="canonical" href="https://redis.bhavinsachaniya.in/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://redis.bhavinsachaniya.in/" />
+    <meta property="og:title"
+      content="Redis Playground - Interactive Learning Platform" />
+    <meta property="og:description"
+      content="Master Redis commands through an interactive robot warehouse simulation. Learn key-value operations, data structures, and best practices with hands-on exercises." />
+    <meta property="og:image"
+      content="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921879/Frame_3qraFA_cglpky.png" />
+    <meta property="og:image:alt" content="Redis Playground - Interactive Redis Tutorial" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:site_name" content="Redis Playground" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@bhavinsachaniya" />
+    <meta name="twitter:creator" content="@bhavinsachaniya" />
+    <meta name="twitter:url" content="https://redis.bhavinsachaniya.in/" />
+    <meta name="twitter:title"
+      content="Redis Playground - Interactive Learning Platform" />
+    <meta name="twitter:description"
+      content="Master Redis commands through an interactive robot warehouse simulation. Learn key-value operations, data structures, and best practices with hands-on exercises." />
+    <meta name="twitter:image"
+      content="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921879/Frame_3qraFA_cglpky.png" />
+    <meta name="twitter:image:alt" content="Redis Playground - Interactive Redis Tutorial" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32"
+      href="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921890/Frame_4ADFFAD_sasjau.png" />
+    <link rel="icon" type="image/png" sizes="16x16"
+      href="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921890/Frame_4ADFFAD_sasjau.png" />
+    <link rel="apple-touch-icon" sizes="180x180"
+      href="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921890/Frame_4ADFFAD_sasjau.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Redis Playground: The Robot Warehouse",
+      "url": "https://redis.bhavinsachaniya.in",
+      "description": "Master Redis commands through an interactive robot warehouse simulation. Learn key-value operations, data structures, and best practices with hands-on exercises.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Bhavin Sachaniya",
+        "url": "https://bhavinsachaniya.in"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Bhavin Sachaniya"
+      },
+      "inLanguage": "en-US",
+      "featureList": [
+        "Interactive Redis CLI simulation",
+        "Step-by-step Redis tutorials",
+        "Robot warehouse visualization",
+        "Hands-on Redis exercises",
+        "Learn Redis strings, lists, sets, hashes",
+        "Redis expiration and TTL management"
+      ],
+      "screenshot": "https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921879/Frame_3qraFA_cglpky.png",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "ratingCount": "1"
+      }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "name": "Redis Playground: The Robot Warehouse",
+      "description": "Interactive Redis tutorial with 6 modules covering strings, expiration, lists, sets, hashes, and database management.",
+      "provider": {
+        "@type": "Person",
+        "name": "Bhavin Sachaniya",
+        "url": "https://bhavinsachaniya.in"
+      },
+      "educationalLevel": "Beginner",
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "online",
+        "courseWorkload": "PT2H"
+      }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://redis.bhavinsachaniya.in/"
+      }]
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              redis: {
+                50: '#ffe5e5',
+                100: '#ffcccc',
+                200: '#ff9999',
+                300: '#ff6666',
+                400: '#ff3333',
+                500: '#ff0000', // Base Redis Red
+                600: '#cc0000',
+                700: '#990000',
+                800: '#660000',
+                900: '#330000',
+              },
+              robot: {
+                dark: '#0f172a',
+                panel: '#1e293b',
+                accent: '#38bdf8'
+              }
+            },
+            fontFamily: {
+              mono: ['Fira Code', 'Courier New', 'monospace'],
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      /* Custom scrollbar for terminal feel */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+      }
+      .glass-panel {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-robot-dark text-slate-200 h-screen overflow-hidden selection:bg-redis-500 selection:text-white">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
