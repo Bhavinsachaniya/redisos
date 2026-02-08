@@ -269,16 +269,16 @@ const App: React.FC = () => {
          </div>
 
          {/* Main Content Area */}
-         {/* Restored Padding: lg:p-4, lg:gap-4 */}
+         {/* Mobile: Optimized padding to prevent overlaps */}
          <div 
-            className="flex-1 flex flex-col lg:flex-row p-2 pt-20 pb-24 lg:p-4 lg:pb-4 gap-2 lg:gap-4 min-h-0 overflow-hidden relative"
+            className="flex-1 flex flex-col lg:flex-row p-2 pt-[88px] pb-[120px] lg:p-4 lg:pb-4 gap-2 lg:gap-4 min-h-0 overflow-hidden relative"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
          >
             {/* Left Column: Guide & Terminal */}
-            <div className={`flex flex-col gap-2 lg:gap-4 w-full lg:w-1/2 h-full min-h-0 ${mobileTab === 'visualizer' ? 'hidden lg:flex' : 'flex'}`}>
-                <div className="flex-none z-10">
+            <div className={`flex flex-col gap-2 lg:gap-4 w-full lg:w-1/2 h-full min-h-0 overflow-y-auto lg:overflow-visible ${mobileTab === 'visualizer' ? 'hidden lg:flex' : 'flex'}`}>
+                <div className="flex-none z-10 shrink-0">
                     <StepGuide 
                         module={currentModule} 
                         currentStepIndex={currentStepIndex} 
@@ -286,7 +286,7 @@ const App: React.FC = () => {
                         canAdvance={canAdvance}
                     />
                 </div>
-                <div className="flex-1 min-h-0 relative z-0">
+                <div className="flex-1 min-h-0 min-h-[200px] relative z-0 shrink">
                     <Terminal 
                         onExecute={handleExecute} 
                         history={history} 
