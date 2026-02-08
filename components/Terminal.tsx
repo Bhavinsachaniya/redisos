@@ -8,6 +8,7 @@ interface TerminalProps {
   isProcessing: boolean;
   isActive?: boolean;
   suggestedCommand?: string;
+  isKeyboardOpen?: boolean;
 }
 
 const COMMAND_HINTS: Record<string, string> = {
@@ -45,15 +46,15 @@ const HistoryItem: React.FC<{ entry: { command: string; output: string; status: 
 
   return (
     <div className="space-y-1">
-      <div className="flex items-center gap-2 text-slate-300 text-sm">
-        <span className="text-redis-500 shrink-0">127.0.0.1:6379&gt;</span>
+      <div className="flex items-center gap-2 text-slate-300 text-xs md:text-sm">
+        <span className="text-redis-500 shrink-0 text-xs md:text-sm">127.0.0.1:6379&gt;</span>
         <span className="break-all font-semibold">{entry.command}</span>
       </div>
       <div className="relative group">
         <motion.div 
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          className={`${entry.status === 'error' ? 'text-red-400' : 'text-green-400'} whitespace-pre-wrap pl-3 border-l-2 border-slate-700/50 pr-8 text-sm leading-relaxed`}
+          className={`${entry.status === 'error' ? 'text-red-400' : 'text-green-400'} whitespace-pre-wrap pl-2 md:pl-3 border-l-2 border-slate-700/50 pr-10 md:pr-8 text-xs md:text-sm leading-relaxed break-words overflow-x-auto`}
         >
           {entry.output}
         </motion.div>
@@ -61,7 +62,7 @@ const HistoryItem: React.FC<{ entry: { command: string; output: string; status: 
         {entry.output && (
           <button
             onClick={handleCopy}
-            className="absolute right-0 top-0 p-1.5 rounded-md bg-slate-800 border border-slate-700 text-slate-400 opacity-100 md:opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all duration-200 hover:bg-slate-700 hover:text-white hover:border-slate-600 z-10"
+            className="absolute right-0 top-0 p-1.5 rounded-md bg-slate-800 border border-slate-700 text-slate-400 opacity-100 md:opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all duration-200 hover:bg-slate-700 hover:text-white hover:border-slate-600 z-10 touch-manipulation"
             title="Copy output"
             aria-label="Copy output to clipboard"
           >
@@ -77,11 +78,12 @@ const HistoryItem: React.FC<{ entry: { command: string; output: string; status: 
   );
 };
 
-const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true, suggestedCommand }) => {
+const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true, suggestedCommand, isKeyboardOpen = false }) => {
   const [input, setInput] = useState('');
   const [hint, setHint] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll
   useEffect(() => {
@@ -98,6 +100,17 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
         return () => clearTimeout(timer);
     }
   }, [isActive]);
+
+  // Scroll input into view when keyboard opens on mobile
+  useEffect(() => {
+    if (isKeyboardOpen && isActive && inputRef.current) {
+      // Delay to ensure keyboard animation completes
+      const timer = setTimeout(() => {
+        inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isKeyboardOpen, isActive]);
 
   // Update hints
   useEffect(() => {
@@ -134,6 +147,12 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
     // Only focus if user isn't selecting text
     if (!selection || selection.toString().length === 0) {
         inputRef.current?.focus();
+        // Scroll to input on mobile
+        if (window.innerWidth < 1024) {
+          setTimeout(() => {
+            inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100);
+        }
     }
   };
 
@@ -141,6 +160,7 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
 
   return (
     <div 
+      ref={terminalRef}
       className="flex flex-col h-full bg-black/90 rounded-xl overflow-hidden border border-slate-700 shadow-2xl font-mono relative"
       onClick={handleContainerClick}
     >
@@ -158,8 +178,8 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
       </div>
 
       {/* Output Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-        <div className="text-slate-500 mb-4 text-sm leading-relaxed">
+      <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 custom-scrollbar">
+        <div className="text-slate-500 mb-4 text-xs md:text-sm leading-relaxed">
           Welcome to Redis Playground v1.1.0<br/>
           Connected to localhost:6379
         </div>
@@ -172,49 +192,61 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
 
       {/* Input Area */}
       <div className="relative shrink-0">
-        {/* Hint Tooltip */}
+        {/* Hint Tooltip - hide on mobile when keyboard is open to prevent overflow */}
         <AnimatePresence>
-            {hint && input.trim() && (
+            {hint && input.trim() && !isKeyboardOpen && (
                 <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="absolute bottom-full left-4 mb-2 px-3 py-1 bg-slate-800 border border-slate-600 text-xs rounded-lg shadow-xl pointer-events-none flex items-center gap-2 max-w-[90vw] truncate"
+                    className="absolute bottom-full left-2 md:left-4 mb-2 px-2 md:px-3 py-1 bg-slate-800 border border-slate-600 text-[10px] md:text-xs rounded-lg shadow-xl pointer-events-none flex items-center gap-1.5 md:gap-2 max-w-[calc(100vw-2rem)] md:max-w-[90vw] overflow-hidden"
                 >
                     {isMatchingSuggestion ? (
                         <>
-                            <span className="text-yellow-400 font-bold shrink-0">Suggestion:</span>
-                            <span className="text-slate-300 font-mono truncate">
+                            <span className="text-yellow-400 font-bold shrink-0 text-[9px] md:text-xs">Suggestion:</span>
+                            <span className="text-slate-300 font-mono truncate min-w-0">
                                 {input}<span className="text-slate-500">{hint}</span>
                             </span>
                         </>
                     ) : (
                         <>
-                            <span className="text-slate-400 font-bold shrink-0">Usage:</span>
-                            <span className="text-redis-400 font-bold font-mono">{input.trim().split(' ')[0].toUpperCase()}</span> 
-                            <span className="text-slate-500 font-mono truncate">{hint}</span>
+                            <span className="text-slate-400 font-bold shrink-0 text-[9px] md:text-xs">Usage:</span>
+                            <span className="text-redis-400 font-bold font-mono truncate">{input.trim().split(' ')[0].toUpperCase()}</span> 
+                            <span className="text-slate-500 font-mono truncate min-w-0">{hint}</span>
                         </>
                     )}
                 </motion.div>
             )}
         </AnimatePresence>
 
-        <form onSubmit={handleSubmit} className="p-4 bg-slate-900 border-t border-slate-800 flex items-center gap-2 relative z-10">
-            <span className="text-redis-500 font-bold shrink-0 text-base">127.0.0.1:6379&gt;</span>
+        <form onSubmit={handleSubmit} className="p-3 md:p-4 bg-slate-900 border-t border-slate-800 flex items-center gap-2 relative z-10">
+            <span className="text-redis-500 font-bold shrink-0 text-sm md:text-base">127.0.0.1:6379&gt;</span>
             <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            // Standard text size
+            onFocus={() => {
+              // Ensure input stays visible on focus (mobile)
+              if (window.innerWidth < 1024) {
+                setTimeout(() => {
+                  inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+              }
+            }}
+            // Must be 16px on mobile to prevent zoom on focus (iOS/Android)
             className="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-600 text-base font-mono min-w-0"
+            style={{ fontSize: window.innerWidth < 1024 ? '16px' : undefined }}
             placeholder="Type command..."
             autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
             autoFocus
             />
             <button 
                 type="submit" 
-                className={`p-2 rounded-md transition-colors shrink-0 ${input.trim() ? 'bg-redis-600 text-white hover:bg-redis-500' : 'text-slate-600 bg-slate-800 cursor-not-allowed'}`}
+                className={`p-2 rounded-md transition-colors shrink-0 touch-manipulation ${input.trim() ? 'bg-redis-600 text-white hover:bg-redis-500 active:bg-redis-700' : 'text-slate-600 bg-slate-800 cursor-not-allowed'}`}
                 disabled={!input.trim()}
             >
                 <Play className="w-4 h-4 fill-current" />

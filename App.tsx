@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [canAdvance, setCanAdvance] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileTab, setMobileTab] = useState<'terminal' | 'visualizer'>('terminal');
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   // Swipe State
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -25,6 +26,41 @@ const App: React.FC = () => {
   const minSwipeDistance = 50;
 
   const currentModule = CURRICULUM.modules.find(m => m.id === currentModuleId)!;
+  
+  // Keyboard Detection for Mobile
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Detect keyboard open/close on mobile
+    const handleResize = () => {
+      if (window.innerWidth < 1024) { // Only on mobile/tablet
+        const viewportHeight = window.visualViewport?.height || window.innerHeight;
+        const windowHeight = window.innerHeight;
+        // If viewport height is significantly smaller, keyboard is likely open
+        const isOpen = viewportHeight < windowHeight * 0.75;
+        setIsKeyboardOpen(isOpen);
+      } else {
+        setIsKeyboardOpen(false);
+      }
+    };
+
+    // Use visualViewport if available (better for mobile)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize);
+    } else {
+      window.addEventListener('resize', handleResize);
+    }
+    
+    handleResize(); // Initial check
+    
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize);
+      } else {
+        window.removeEventListener('resize', handleResize);
+      }
+    };
+  }, []);
   
   // Game Loop for Expiration
   useEffect(() => {
@@ -131,7 +167,9 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-[100dvh] bg-robot-dark text-slate-200 font-sans overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-screen lg:h-[100dvh] bg-robot-dark text-slate-200 font-sans overflow-hidden" style={{ 
+      height: typeof window !== 'undefined' && window.visualViewport ? `${window.visualViewport.height}px` : undefined 
+    }}>
       
       {/* UNIQUE MOBILE/TABLET HEADER: Floating HUD Style */}
       <header className="lg:hidden fixed top-0 inset-x-0 z-50 p-4 pointer-events-none">
@@ -269,16 +307,18 @@ const App: React.FC = () => {
          </div>
 
          {/* Main Content Area */}
-         {/* Mobile: Optimized padding to prevent overlaps */}
+         {/* Mobile: Optimized padding to prevent overlaps - adjust when keyboard is open */}
          <div 
-            className="flex-1 flex flex-col lg:flex-row p-2 pt-[88px] pb-[120px] lg:p-4 lg:pb-4 gap-2 lg:gap-4 min-h-0 overflow-hidden relative"
+            className={`flex-1 flex flex-col lg:flex-row p-2 pt-[88px] lg:p-4 lg:pb-4 gap-2 lg:gap-4 min-h-0 overflow-hidden relative transition-all duration-200 ${
+              isKeyboardOpen ? 'pb-2' : 'pb-[120px] lg:pb-4'
+            }`}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
          >
             {/* Left Column: Guide & Terminal */}
             <div className={`flex flex-col gap-2 lg:gap-4 w-full lg:w-1/2 h-full min-h-0 overflow-y-auto lg:overflow-visible ${mobileTab === 'visualizer' ? 'hidden lg:flex' : 'flex'}`}>
-                <div className="flex-none z-10 shrink-0">
+                <div className={`z-10 shrink-0 transition-all duration-200 ${isKeyboardOpen ? 'hidden' : 'flex-none'}`}>
                     <StepGuide 
                         module={currentModule} 
                         currentStepIndex={currentStepIndex} 
@@ -286,13 +326,14 @@ const App: React.FC = () => {
                         canAdvance={canAdvance}
                     />
                 </div>
-                <div className="flex-1 min-h-0 min-h-[200px] relative z-0 shrink">
+                <div className={`min-h-0 relative z-0 transition-all duration-200 ${isKeyboardOpen ? 'flex-1' : 'flex-1 min-h-[200px]'}`}>
                     <Terminal 
                         onExecute={handleExecute} 
                         history={history} 
                         isProcessing={false}
                         isActive={mobileTab === 'terminal'}
                         suggestedCommand={currentModule.steps[currentStepIndex].input_code}
+                        isKeyboardOpen={isKeyboardOpen}
                     />
                 </div>
             </div>
@@ -303,8 +344,10 @@ const App: React.FC = () => {
             </div>
          </div>
 
-         {/* UNIQUE MOBILE/TABLET BOTTOM NAV: Floating Control Deck */}
-         <div className="lg:hidden fixed bottom-6 inset-x-4 z-50 pointer-events-none">
+         {/* UNIQUE MOBILE/TABLET BOTTOM NAV: Floating Control Deck - hide when keyboard is open */}
+         <div className={`lg:hidden fixed bottom-6 inset-x-4 z-50 pointer-events-none transition-all duration-200 ${
+           isKeyboardOpen ? 'opacity-0 translate-y-full' : 'opacity-100 translate-y-0'
+         }`}>
              <div className="pointer-events-auto mx-auto max-w-sm bg-[#0f172a]/95 backdrop-blur-2xl border border-slate-700/50 rounded-3xl p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex relative ring-1 ring-white/10 overflow-hidden">
                  {/* Elastic Background Pill */}
                  <div 

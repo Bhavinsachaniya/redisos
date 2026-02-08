@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#ff0000" />
     <title>Redis Playground: The Robot Warehouse - Interactive Redis Tutorial</title>
     
@@ -183,6 +183,40 @@
         background: rgba(30, 41, 59, 0.7);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      /* Prevent iOS zoom on input focus - use 16px minimum font size */
+      @media screen and (max-width: 1023px) {
+        input, textarea, select {
+          font-size: 16px !important;
+        }
+      }
+      
+      /* Improve touch targets for mobile */
+      @media (hover: none) and (pointer: coarse) {
+        button, a, [role="button"] {
+          min-height: 44px;
+          min-width: 44px;
+        }
+      }
+      
+      /* Fix Android Chrome scrollbar and input behavior */
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      /* Smooth scroll behavior */
+      html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* Fix for mobile viewport height with keyboard */
+      @supports (-webkit-touch-callout: none) {
+        body {
+          min-height: -webkit-fill-available;
+        }
       }
     </style>
   <script type="importmap">

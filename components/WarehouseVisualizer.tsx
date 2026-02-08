@@ -160,8 +160,8 @@ const WarehouseVisualizer: React.FC<VisualizerProps> = ({ store }) => {
                 <p className="font-semibold text-slate-400 text-sm">Warehouse Empty</p>
             </motion.div>
         ) : (
-            // Grid
-            <div className="grid grid-cols-2 gap-3 pb-24 lg:pb-3 w-full content-start">
+            // Grid - better mobile padding
+            <div className="grid grid-cols-2 gap-2 md:gap-3 pb-4 lg:pb-3 w-full content-start">
                 {keys.map(key => (
                     <DataCard key={key} id={key} entry={store[key]} />
                 ))}
