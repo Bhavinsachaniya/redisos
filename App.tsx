@@ -201,8 +201,9 @@ const App: React.FC = () => {
     <div className="flex flex-col lg:flex-row h-screen lg:h-[100dvh] bg-robot-dark text-slate-200 font-sans overflow-hidden">
       
       {/* UNIQUE MOBILE/TABLET HEADER: Floating HUD Style */}
-      <header className="lg:hidden fixed top-0 inset-x-0 z-50 p-4 pointer-events-none">
-        <div className="flex gap-3 pointer-events-auto">
+      <header className="lg:hidden fixed top-0 inset-x-0 z-50 pointer-events-none">
+        <div className="p-4 pb-2 pointer-events-auto space-y-2">
+          <div className="flex gap-3">
             {/* Identity Chip */}
             <div className="flex-1 bg-[#0f172a]/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-2.5 shadow-2xl flex items-center gap-3 relative overflow-hidden ring-1 ring-white/5">
                  {/* Techy decorations */}
@@ -236,6 +237,38 @@ const App: React.FC = () => {
                     <Menu className="w-6 h-6 group-hover:text-white transition-colors" />
                 )}
             </button>
+          </div>
+          
+          {/* Social Links - Always visible on mobile */}
+          <div className="flex justify-center gap-1 px-2">
+            <a 
+              href="https://github.com/bhavinsachaniya" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#0f172a]/80 backdrop-blur-xl border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-500 hover:bg-slate-800/90 transition-all active:scale-95 shadow-lg ring-1 ring-white/5"
+              aria-label="GitHub"
+            >
+              <Github className="w-4 h-4" />
+            </a>
+            <a 
+              href="https://linkedin.com/in/bhavindotdraft" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#0f172a]/80 backdrop-blur-xl border border-slate-700/50 text-slate-400 hover:text-[#0077b5] hover:border-[#0077b5]/50 hover:bg-[#0077b5]/10 transition-all active:scale-95 shadow-lg ring-1 ring-white/5"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-4 h-4" />
+            </a>
+            <a 
+              href="https://bhavinsachaniya.in" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#0f172a]/80 backdrop-blur-xl border border-slate-700/50 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all active:scale-95 shadow-lg ring-1 ring-white/5"
+              aria-label="Portfolio Website"
+            >
+              <Globe className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </header>
 
@@ -336,9 +369,9 @@ const App: React.FC = () => {
          </div>
 
          {/* Main Content Area */}
-         {/* Mobile: When keyboard opens, remove bottom padding and give full height to terminal */}
+         {/* Mobile: Adjust padding for new header height (social links added) and keyboard */}
          <div 
-            className={`flex-1 flex flex-col lg:flex-row p-2 pt-[88px] lg:p-4 lg:pb-4 gap-2 lg:gap-4 min-h-0 relative transition-all duration-200 ${
+            className={`flex-1 flex flex-col lg:flex-row p-2 pt-[120px] lg:p-4 lg:pt-4 gap-2 lg:gap-4 min-h-0 relative transition-all duration-200 ${
               isKeyboardOpen ? 'pb-0 overflow-visible' : 'pb-[120px] lg:pb-4 overflow-hidden'
             }`}
             onTouchStart={onTouchStart}
@@ -358,7 +391,7 @@ const App: React.FC = () => {
                     />
                   </div>
                 )}
-                <div className={`relative z-0 transition-all duration-200 ${isKeyboardOpen ? 'fixed inset-x-2 top-[88px] bottom-0 flex flex-col lg:relative lg:inset-auto lg:flex-1' : 'flex-1 min-h-[200px]'}`}>
+                <div className={`relative z-0 transition-all duration-200 ${isKeyboardOpen ? 'fixed inset-x-2 top-[120px] bottom-0 flex flex-col lg:relative lg:inset-auto lg:flex-1' : 'flex-1 min-h-[200px]'}`}>
                     <Terminal 
                         onExecute={handleExecute} 
                         history={history} 
