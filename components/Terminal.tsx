@@ -101,15 +101,56 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
     }
   }, [isActive]);
 
-  // Scroll input into view when keyboard opens on mobile
+  // Aggressive scroll and positioning when keyboard opens
   useEffect(() => {
-    if (isKeyboardOpen && isActive && inputRef.current) {
-      // Delay to ensure keyboard animation completes
-      const timer = setTimeout(() => {
-        inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
-      return () => clearTimeout(timer);
-    }
+    if (!isKeyboardOpen || !isActive) return;
+    
+    // Multiple scroll attempts to ensure input is visible
+    const scrollToInput = () => {
+      if (inputRef.current) {
+        // Method 1: ScrollIntoView
+        inputRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'end',
+          inline: 'nearest'
+        });
+        
+        // Method 2: Scroll parent containers
+        let parent = inputRef.current.parentElement;
+        while (parent) {
+          if (parent.scrollHeight > parent.clientHeight) {
+            parent.scrollTop = parent.scrollHeight;
+          }
+          parent = parent.parentElement;
+        }
+        
+        // Method 3: Window scroll
+        if (window.innerWidth < 1024) {
+          const rect = inputRef.current.getBoundingClientRect();
+          const viewportHeight = window.visualViewport?.height || window.innerHeight;
+          
+          // If input is below viewport, scroll window
+          if (rect.bottom > viewportHeight) {
+            window.scrollTo({
+              top: window.scrollY + (rect.bottom - viewportHeight) + 20,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }
+    };
+    
+    // Scroll immediately, then again after keyboard animation
+    scrollToInput();
+    const timer1 = setTimeout(scrollToInput, 100);
+    const timer2 = setTimeout(scrollToInput, 300);
+    const timer3 = setTimeout(scrollToInput, 600);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
   }, [isKeyboardOpen, isActive]);
 
   // Update hints
@@ -147,13 +188,33 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
     // Only focus if user isn't selecting text
     if (!selection || selection.toString().length === 0) {
         inputRef.current?.focus();
-        // Scroll to input on mobile
-        if (window.innerWidth < 1024) {
-          setTimeout(() => {
-            inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }, 100);
-        }
     }
+  };
+  
+  // Handle input focus - scroll into view aggressively on mobile
+  const handleInputFocus = () => {
+    if (window.innerWidth >= 1024) return;
+    
+    const scrollToInput = () => {
+      if (!inputRef.current) return;
+      
+      // Scroll the input into view
+      inputRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'end',
+        inline: 'nearest'
+      });
+      
+      // Also scroll terminal to bottom
+      if (bottomRef.current) {
+        bottomRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    };
+    
+    // Multiple attempts to ensure visibility
+    setTimeout(scrollToInput, 100);
+    setTimeout(scrollToInput, 300);
+    setTimeout(scrollToInput, 600);
   };
 
   const isMatchingSuggestion = suggestedCommand && input.trim() && suggestedCommand.toLowerCase().startsWith(input.trim().toLowerCase());
@@ -161,7 +222,9 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
   return (
     <div 
       ref={terminalRef}
-      className="flex flex-col h-full bg-black/90 rounded-xl overflow-hidden border border-slate-700 shadow-2xl font-mono relative"
+      className={`flex flex-col h-full bg-black/90 rounded-xl overflow-hidden border border-slate-700 shadow-2xl font-mono relative ${
+        isKeyboardOpen ? 'lg:h-full' : ''
+      }`}
       onClick={handleContainerClick}
     >
       {/* Header */}
@@ -177,8 +240,10 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
         </div>
       </div>
 
-      {/* Output Area */}
-      <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 custom-scrollbar">
+      {/* Output Area - Aggressively reduce height when keyboard is open */}
+      <div className={`overflow-y-auto p-3 md:p-4 space-y-3 custom-scrollbar ${
+        isKeyboardOpen ? 'flex-none h-[25vh] min-h-[150px]' : 'flex-1'
+      }`}>
         <div className="text-slate-500 mb-4 text-xs md:text-sm leading-relaxed">
           Welcome to Redis Playground v1.1.0<br/>
           Connected to localhost:6379
@@ -219,20 +284,25 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
             )}
         </AnimatePresence>
 
-        <form onSubmit={handleSubmit} className="p-3 md:p-4 bg-slate-900 border-t border-slate-800 flex items-center gap-2 relative z-10">
+        <form 
+          onSubmit={handleSubmit} 
+          className={`p-3 md:p-4 bg-slate-900 border-t border-slate-800 flex items-center gap-2 z-50 ${
+            isKeyboardOpen ? 'fixed bottom-0 left-2 right-2 lg:relative lg:bottom-auto shadow-[0_-8px_24px_rgba(0,0,0,0.8)] rounded-b-xl pb-safe' : 'relative'
+          }`}
+          style={isKeyboardOpen && window.innerWidth < 1024 ? { 
+            paddingBottom: 'max(12px, env(safe-area-inset-bottom))' 
+          } : undefined}
+        >
             <span className="text-redis-500 font-bold shrink-0 text-sm md:text-base">127.0.0.1:6379&gt;</span>
             <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onFocus={() => {
-              // Ensure input stays visible on focus (mobile)
-              if (window.innerWidth < 1024) {
-                setTimeout(() => {
-                  inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-              }
+            onFocus={handleInputFocus}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleInputFocus();
             }}
             // Must be 16px on mobile to prevent zoom on focus (iOS/Android)
             className="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-600 text-base font-mono min-w-0"
@@ -242,11 +312,13 @@ const Terminal: React.FC<TerminalProps> = ({ onExecute, history, isActive = true
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck="false"
+            enterKeyHint="send"
+            inputMode="text"
             autoFocus
             />
             <button 
                 type="submit" 
-                className={`p-2 rounded-md transition-colors shrink-0 touch-manipulation ${input.trim() ? 'bg-redis-600 text-white hover:bg-redis-500 active:bg-redis-700' : 'text-slate-600 bg-slate-800 cursor-not-allowed'}`}
+                className={`p-2 rounded-md transition-colors shrink-0 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center ${input.trim() ? 'bg-redis-600 text-white hover:bg-redis-500 active:bg-redis-700' : 'text-slate-600 bg-slate-800 cursor-not-allowed'}`}
                 disabled={!input.trim()}
             >
                 <Play className="w-4 h-4 fill-current" />

@@ -27,38 +27,69 @@ const App: React.FC = () => {
 
   const currentModule = CURRICULUM.modules.find(m => m.id === currentModuleId)!;
   
-  // Keyboard Detection for Mobile
+  // More robust keyboard detection for Android/iOS
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    // Detect keyboard open/close on mobile
-    const handleResize = () => {
-      if (window.innerWidth < 1024) { // Only on mobile/tablet
-        const viewportHeight = window.visualViewport?.height || window.innerHeight;
-        const windowHeight = window.innerHeight;
-        // If viewport height is significantly smaller, keyboard is likely open
-        const isOpen = viewportHeight < windowHeight * 0.75;
-        setIsKeyboardOpen(isOpen);
-      } else {
+    let initialHeight = window.innerHeight;
+    
+    const detectKeyboard = () => {
+      if (window.innerWidth >= 1024) {
         setIsKeyboardOpen(false);
+        return;
+      }
+      
+      // Method 1: Check visualViewport (most reliable for modern browsers)
+      if (window.visualViewport) {
+        const viewportHeight = window.visualViewport.height;
+        const isOpen = viewportHeight < initialHeight * 0.7;
+        setIsKeyboardOpen(isOpen);
+        return;
+      }
+      
+      // Method 2: Check window.innerHeight change (fallback)
+      const currentHeight = window.innerHeight;
+      const heightDiff = initialHeight - currentHeight;
+      const isOpen = heightDiff > 150; // Keyboard typically takes 200-400px
+      setIsKeyboardOpen(isOpen);
+    };
+    
+    // Listen to multiple events for better detection
+    const handleResize = () => {
+      detectKeyboard();
+    };
+    
+    const handleFocus = (e: FocusEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        // Delay detection to allow keyboard to animate in
+        setTimeout(detectKeyboard, 300);
       }
     };
-
-    // Use visualViewport if available (better for mobile)
+    
+    const handleBlur = () => {
+      // Delay to allow keyboard to animate out
+      setTimeout(detectKeyboard, 300);
+    };
+    
+    // Add listeners
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', handleResize);
-    } else {
-      window.addEventListener('resize', handleResize);
+      window.visualViewport.addEventListener('scroll', handleResize);
     }
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('focusin', handleFocus);
+    window.addEventListener('focusout', handleBlur);
     
-    handleResize(); // Initial check
+    detectKeyboard(); // Initial check
     
     return () => {
       if (window.visualViewport) {
         window.visualViewport.removeEventListener('resize', handleResize);
-      } else {
-        window.removeEventListener('resize', handleResize);
+        window.visualViewport.removeEventListener('scroll', handleResize);
       }
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('focusin', handleFocus);
+      window.removeEventListener('focusout', handleBlur);
     };
   }, []);
   
@@ -167,9 +198,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen lg:h-[100dvh] bg-robot-dark text-slate-200 font-sans overflow-hidden" style={{ 
-      height: typeof window !== 'undefined' && window.visualViewport ? `${window.visualViewport.height}px` : undefined 
-    }}>
+    <div className="flex flex-col lg:flex-row h-screen lg:h-[100dvh] bg-robot-dark text-slate-200 font-sans overflow-hidden">
       
       {/* UNIQUE MOBILE/TABLET HEADER: Floating HUD Style */}
       <header className="lg:hidden fixed top-0 inset-x-0 z-50 p-4 pointer-events-none">
@@ -307,26 +336,29 @@ const App: React.FC = () => {
          </div>
 
          {/* Main Content Area */}
-         {/* Mobile: Optimized padding to prevent overlaps - adjust when keyboard is open */}
+         {/* Mobile: When keyboard opens, remove bottom padding and give full height to terminal */}
          <div 
-            className={`flex-1 flex flex-col lg:flex-row p-2 pt-[88px] lg:p-4 lg:pb-4 gap-2 lg:gap-4 min-h-0 overflow-hidden relative transition-all duration-200 ${
-              isKeyboardOpen ? 'pb-2' : 'pb-[120px] lg:pb-4'
+            className={`flex-1 flex flex-col lg:flex-row p-2 pt-[88px] lg:p-4 lg:pb-4 gap-2 lg:gap-4 min-h-0 relative transition-all duration-200 ${
+              isKeyboardOpen ? 'pb-0 overflow-visible' : 'pb-[120px] lg:pb-4 overflow-hidden'
             }`}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
          >
             {/* Left Column: Guide & Terminal */}
-            <div className={`flex flex-col gap-2 lg:gap-4 w-full lg:w-1/2 h-full min-h-0 overflow-y-auto lg:overflow-visible ${mobileTab === 'visualizer' ? 'hidden lg:flex' : 'flex'}`}>
-                <div className={`z-10 shrink-0 transition-all duration-200 ${isKeyboardOpen ? 'hidden' : 'flex-none'}`}>
+            <div className={`flex flex-col gap-2 lg:gap-4 w-full lg:w-1/2 h-full min-h-0 ${isKeyboardOpen ? 'overflow-visible' : 'overflow-y-auto lg:overflow-visible'} ${mobileTab === 'visualizer' ? 'hidden lg:flex' : 'flex'}`}>
+                {/* Hide step guide when keyboard is open to maximize terminal space */}
+                {!isKeyboardOpen && (
+                  <div className="flex-none z-10 shrink-0">
                     <StepGuide 
                         module={currentModule} 
                         currentStepIndex={currentStepIndex} 
                         onNext={handleNext}
                         canAdvance={canAdvance}
                     />
-                </div>
-                <div className={`min-h-0 relative z-0 transition-all duration-200 ${isKeyboardOpen ? 'flex-1' : 'flex-1 min-h-[200px]'}`}>
+                  </div>
+                )}
+                <div className={`relative z-0 transition-all duration-200 ${isKeyboardOpen ? 'fixed inset-x-2 top-[88px] bottom-0 flex flex-col lg:relative lg:inset-auto lg:flex-1' : 'flex-1 min-h-[200px]'}`}>
                     <Terminal 
                         onExecute={handleExecute} 
                         history={history} 

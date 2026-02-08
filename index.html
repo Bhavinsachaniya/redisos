@@ -218,6 +218,49 @@
           min-height: -webkit-fill-available;
         }
       }
+      
+      /* Ensure body and root take full height */
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      
+      @media screen and (max-width: 1023px) {
+        html, body {
+          position: fixed;
+          overflow: hidden;
+        }
+      }
+      
+      #root {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      
+      /* Better mobile scrolling */
+      @media screen and (max-width: 1023px) {
+        .custom-scrollbar {
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+        }
+        
+        /* Ensure terminal input stays above keyboard */
+        input:focus {
+          transform: translateZ(0);
+          -webkit-transform: translateZ(0);
+        }
+      }
+      
+      /* Prevent body scroll when keyboard is open on mobile */
+      @media screen and (max-width: 1023px) {
+        body.keyboard-open {
+          position: fixed;
+          width: 100%;
+          overflow: hidden;
+        }
+      }
     </style>
   <script type="importmap">
 {
