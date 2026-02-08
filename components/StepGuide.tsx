@@ -12,7 +12,7 @@ interface StepGuideProps {
 
 const StepGuide: React.FC<StepGuideProps> = ({ module, currentStepIndex, onNext, canAdvance }) => {
   const step = module.steps[currentStepIndex];
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true); // Default to expanded on mobile
 
   return (
     <div className="bg-robot-panel border border-slate-700 rounded-xl shadow-lg flex flex-col relative overflow-hidden transition-all duration-300 max-h-[45vh] md:max-h-none">
@@ -79,9 +79,16 @@ const StepGuide: React.FC<StepGuideProps> = ({ module, currentStepIndex, onNext,
             <p className="text-slate-200 text-xs md:text-sm leading-relaxed">{step.task}</p>
         </div>
 
-        {/* Mobile Expand Hint if collapsed */}
+        {/* Mobile Collapse/Expand Hint */}
         <div className="md:hidden text-center">
-            {!isExpanded && (
+            {isExpanded ? (
+                <button 
+                    onClick={(e) => { e.stopPropagation(); setIsExpanded(false); }}
+                    className="text-xs text-slate-500 hover:text-slate-300 flex items-center justify-center gap-1 w-full"
+                >
+                    Hide explanation <ChevronUp className="w-3 h-3" />
+                </button>
+            ) : (
                 <button 
                     onClick={(e) => { e.stopPropagation(); setIsExpanded(true); }}
                     className="text-xs text-slate-500 hover:text-slate-300 flex items-center justify-center gap-1 w-full"
