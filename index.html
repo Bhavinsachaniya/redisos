@@ -1,83 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content" />
-    <title>Redis Playground: The Robot Warehouse</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              redis: {
-                50: '#ffe5e5',
-                100: '#ffcccc',
-                200: '#ff9999',
-                300: '#ff6666',
-                400: '#ff3333',
-                500: '#ff0000', // Base Redis Red
-                600: '#cc0000',
-                700: '#990000',
-                800: '#660000',
-                900: '#330000',
-              },
-              robot: {
-                dark: '#0f172a',
-                panel: '#1e293b',
-                accent: '#38bdf8'
-              }
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content" />
+  <title>Redis Playground: The Robot Warehouse</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Master Redis commands through an interactive robot warehouse simulation. Learn key-value operations, data structures, and best practices with hands-on exercises." />
+  <meta name="keywords" content="Redis, Redis tutorial, Redis learning, Redis commands, database, key-value store, interactive tutorial, Redis playground" />
+  <meta name="author" content="Bhavin Sachaniya" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://redis.bhavinsachaniya.in" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://redis.bhavinsachaniya.in" />
+  <meta property="og:title" content="Redis Playground - Interactive Learning Platform" />
+  <meta property="og:description" content="Master Redis commands through an interactive robot warehouse simulation. Learn key-value operations, data structures, and best practices with hands-on exercises." />
+  <meta property="og:image" content="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921879/Frame_3qraFA_cglpky.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Redis Playground" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://redis.bhavinsachaniya.in" />
+  <meta property="twitter:title" content="Redis Playground - Interactive Learning Platform" />
+  <meta property="twitter:description" content="Master Redis commands through an interactive robot warehouse simulation. Learn key-value operations, data structures, and best practices with hands-on exercises." />
+  <meta property="twitter:image" content="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921879/Frame_3qraFA_cglpky.png" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921890/Frame_4ADFFAD_sasjau.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921890/Frame_4ADFFAD_sasjau.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="https://res.cloudinary.com/dpfh2wf86/image/upload/v1769921890/Frame_4ADFFAD_sasjau.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            redis: {
+              50: '#ffe5e5',
+              100: '#ffcccc',
+              200: '#ff9999',
+              300: '#ff6666',
+              400: '#ff3333',
+              500: '#ff0000', // Base Redis Red
+              600: '#cc0000',
+              700: '#990000',
+              800: '#660000',
+              900: '#330000',
             },
-            fontFamily: {
-              mono: ['Fira Code', 'Courier New', 'monospace'],
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-            },
-            screens: {
-              'xs': '375px',
+            robot: {
+              dark: '#0f172a',
+              panel: '#1e293b',
+              accent: '#38bdf8'
             }
           },
+          fontFamily: {
+            mono: ['Fira Code', 'Courier New', 'monospace'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          screens: {
+            'xs': '375px',
+          }
         },
-      }
-    </script>
-    <style>
-      /* Custom scrollbar for terminal feel */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #0f172a;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 3px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #475569;
-      }
-      
-      /* Utilities */
-      .glass-panel {
-        background: rgba(30, 41, 59, 0.7);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      
-      /* Text selection color */
-      ::selection {
-        background-color: rgba(239, 68, 68, 0.3);
-        color: white;
-      }
+      },
+    }
+  </script>
+  <style>
+    /* Custom scrollbar for terminal feel */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
 
-      /* Prevent pull-to-refresh on mobile to feel like an app */
-      body {
-        overscroll-behavior-y: none;
-      }
-    </style>
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* Utilities */
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Text selection color */
+    ::selection {
+      background-color: rgba(239, 68, 68, 0.3);
+      color: white;
+    }
+
+    /* Prevent pull-to-refresh on mobile to feel like an app */
+    body {
+      overscroll-behavior-y: none;
+    }
+  </style>
   <script type="importmap">
-{
+    {
   "imports": {
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
@@ -87,10 +121,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-robot-dark text-slate-200 h-[100dvh] w-screen overflow-hidden antialiased">
-    <div id="root" class="h-full w-full"></div>
+
+<body class="bg-robot-dark text-slate-200 h-[100dvh] w-screen overflow-hidden antialiased">
+  <div id="root" class="h-full w-full"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>
