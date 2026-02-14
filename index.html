@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redis Playground: The Robot Warehouse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              redis: {
+                50: '#ffe5e5',
+                100: '#ffcccc',
+                200: '#ff9999',
+                300: '#ff6666',
+                400: '#ff3333',
+                500: '#ff0000', // Base Redis Red
+                600: '#cc0000',
+                700: '#990000',
+                800: '#660000',
+                900: '#330000',
+              },
+              robot: {
+                dark: '#0f172a',
+                panel: '#1e293b',
+                accent: '#38bdf8'
+              }
+            },
+            fontFamily: {
+              mono: ['Fira Code', 'Courier New', 'monospace'],
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      /* Custom scrollbar for terminal feel */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+      }
+      .glass-panel {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-robot-dark text-slate-200 h-screen overflow-hidden selection:bg-redis-500 selection:text-white">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

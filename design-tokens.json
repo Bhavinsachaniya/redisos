@@ -1,0 +1,20 @@
+{
+  "project": {
+    "name": "Redis Playground: The Robot Warehouse",
+    "type": "dashboard",
+    "framework": "react",
+    "styling": "tailwind"
+  },
+  "theme": {
+    "mode": "dark",
+    "colors": {
+      "primary": "#ff0000",
+      "secondary": "#1e293b",
+      "accent": "#38bdf8",
+      "background": "#0f172a",
+      "surface": "#1e293b",
+      "textPrimary": "#e2e8f0",
+      "textSecondary": "#94a3b8"
+    }
+  }
+}
