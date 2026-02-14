@@ -1,0 +1,5 @@
+{
+  "name": "Redis Playground: The Robot Warehouse",
+  "description": "An interactive, high-UX Redis terminal and visualizer to learn in-memory data structure commands.",
+  "requestFramePermissions": []
+}
